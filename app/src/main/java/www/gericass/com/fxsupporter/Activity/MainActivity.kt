@@ -1,4 +1,4 @@
-package www.gericass.com.fxsupporter
+package www.gericass.com.fxsupporter.Activity
 
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -10,6 +10,8 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import www.gericass.com.fxsupporter.Fragment.HomeFragment
+import www.gericass.com.fxsupporter.R
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -18,10 +20,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
+        val manager = supportFragmentManager
+        val transaction = manager.beginTransaction()
+        transaction.add(R.id.container, HomeFragment())
+        transaction.commit()
+
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
