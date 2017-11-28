@@ -1,23 +1,31 @@
 package www.gericass.com.fxsupporter.Fragment
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import www.gericass.com.fxsupporter.R
+import rx.android.schedulers.AndroidSchedulers
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
+import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
+import rx.schedulers.Schedulers
+import www.gericass.com.fxsupporter.API.Client
+import www.gericass.com.fxsupporter.API.Ticker
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [HomeFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+import www.gericass.com.fxsupporter.R
+import java.util.ArrayList
+
+
 class HomeFragment : Fragment() {
 
 
@@ -25,14 +33,53 @@ class HomeFragment : Fragment() {
     private var mParam1: String? = null
     private var mParam2: String? = null
 
+
+    private var tickerData: MutableList<Ticker> = mutableListOf()
+
     private var mListener: HomeFragment.OnFragmentInteractionListener? = null
+
+
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         return inflater!!.inflate(R.layout.fragment_home, container, false)
     }
 
+
+    override fun onStart() {
+        super.onStart()
+
+        val DELAY: Long = 1000
+        val _handler = Handler()
+
+        val gson = GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create()
+        val retrofit = Retrofit.Builder()
+                .baseUrl("https://api.bitflyer.jp")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build()
+
+        val apiClient = retrofit.create(Client::class.java)
+
+        _handler.postDelayed(object : Runnable {
+            override fun run() {
+
+                apiClient.search("FX_BTC_JPY")
+                        .subscribeOn(Schedulers.io())
+                        .toSingle()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            tickerData.add(it) // tickerDataにtickerを追加
+
+                        }, {})
+                _handler.postDelayed(this, DELAY)
+
+            }
+        }, DELAY)
+
+    }
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
@@ -41,7 +88,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    public override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
             mListener = context as OnFragmentInteractionListener?
@@ -50,20 +97,12 @@ class HomeFragment : Fragment() {
         }
     }
 
-    public override fun onDetach() {
+    override fun onDetach() {
         super.onDetach()
         mListener = null
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
+
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
@@ -75,14 +114,6 @@ class HomeFragment : Fragment() {
         private val ARG_PARAM1 = "param1"
         private val ARG_PARAM2 = "param2"
 
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment BlankFragment.
-         */
         // TODO: Rename and change types and number of parameters
         fun newInstance(param1: String, param2: String): HomeFragment {
             val fragment = HomeFragment()
@@ -93,5 +124,8 @@ class HomeFragment : Fragment() {
             return fragment
         }
     }
+
+
+
 
 }
