@@ -1,5 +1,6 @@
 package www.gericass.com.fxsupporter.Activity
 
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -13,7 +14,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import www.gericass.com.fxsupporter.Fragment.HomeFragment
 import www.gericass.com.fxsupporter.R
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,4 +85,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
+
+    override fun onFragmentInteraction(uri: Uri) {
+
+
+    }
 }
+
