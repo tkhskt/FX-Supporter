@@ -1,29 +1,37 @@
 package www.gericass.com.fxsupporter.Fragment
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 
 import rx.android.schedulers.AndroidSchedulers
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
-import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import com.wordplat.ikvstockchart.KLineHandler
+import com.wordplat.ikvstockchart.entry.Entry
+import com.wordplat.ikvstockchart.entry.EntrySet
+import kotlinx.android.synthetic.main.fragment_home.*
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import rx.schedulers.Schedulers
 import www.gericass.com.fxsupporter.API.Client
-import www.gericass.com.fxsupporter.API.Ticker
+import www.gericass.com.fxsupporter.API.Candle
+import www.gericass.com.fxsupporter.API.DataExtension
 
 import www.gericass.com.fxsupporter.R
-import java.util.ArrayList
+import www.gericass.com.fxsupporter.R.id.kLineLayout
+import com.wordplat.ikvstockchart.compat.ViewUtils.getSizeColor
+import com.wordplat.ikvstockchart.entry.SizeColor
+
+
 
 
 class HomeFragment : Fragment() {
@@ -34,7 +42,7 @@ class HomeFragment : Fragment() {
     private var mParam2: String? = null
 
 
-    private var tickerData: MutableList<Ticker> = mutableListOf()
+    private var entrySet: EntrySet = EntrySet()
 
     private var mListener: HomeFragment.OnFragmentInteractionListener? = null
 
@@ -49,36 +57,98 @@ class HomeFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        val DELAY: Long = 1000
+        val DELAY: Long = 15000
         val _handler = Handler()
 
         val gson = GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create()
         val retrofit = Retrofit.Builder()
-                .baseUrl("https://api.bitflyer.jp")
+                .baseUrl("https://api.cryptowat.ch")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
 
         val apiClient = retrofit.create(Client::class.java)
 
+
         _handler.postDelayed(object : Runnable {
+            /**
+             * APIリクエストの定期実行
+             */
             override fun run() {
-
-                apiClient.search("FX_BTC_JPY")
-                        .subscribeOn(Schedulers.io())
-                        .toSingle()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            tickerData.add(it) // tickerDataにtickerを追加
-
-                        }, {})
+                getTicker(apiClient)
                 _handler.postDelayed(this, DELAY)
-
             }
         }, DELAY)
 
+        initUI()
+    }
+
+
+    private fun getTicker(apiClient: Client) {
+        /**
+         * APIリクエスト
+         */
+
+        apiClient.search(300)
+                .subscribeOn(Schedulers.io())
+                .toSingle()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Log.v("api",it.result.get(300)?.get(0)?.get(1).toString())
+
+                    entrySet =  DataExtension(it.result.get(300)).getEntrySet()
+                    entrySet.computeStockIndex()
+                    kLineLayout.getKLineView().setEntrySet(entrySet)
+                    kLineLayout.getKLineView().notifyDataSetChanged()
+
+                }, {
+                    Log.v("err", it.toString())
+                })
+    }
+
+    private fun initUI() {
+        /**
+         * チャート設定
+         */
+
+        val sizeColor = kLineLayout.kLineView.render.sizeColor
+        sizeColor.setIncreasingColor(-0xb04796)
+        sizeColor.setDecreasingColor(-0x1fa6a7)
+
+        kLineLayout.getKLineView().setKLineHandler(object : KLineHandler{
+
+
+            override fun onLeftRefresh() {
+                kLineLayout.getKLineView().refreshComplete();
+            }
+
+
+            override fun onRightRefresh() {
+                kLineLayout.getKLineView().refreshComplete();
+            }
+
+
+            override fun onSingleTap(e: MotionEvent, x: Float, y: Float) {
+
+            }
+
+
+            override fun onDoubleTap(e: MotionEvent, x: Float, y: Float) {
+
+            }
+
+
+            override fun onHighlight(entry: Entry, entryIndex: Int, x: Float, y: Float) {
+
+            }
+
+
+            override fun onCancelHighlight() {
+
+            }
+        })
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -91,7 +161,7 @@ class HomeFragment : Fragment() {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
-            mListener = context as OnFragmentInteractionListener?
+            mListener = context
         } else {
             throw RuntimeException((context!!.toString() + " must implement OnFragmentInteractionListener"))
         }

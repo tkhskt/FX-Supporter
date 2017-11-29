@@ -4,5 +4,50 @@
     android:layout_height="match_parent">
 
 
+    <com.wordplat.ikvstockchart.InteractiveKLineLayout
+        android:id="@+id/kLineLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- RadioButtonを実装しないと落ちる -->
+
+
+        <RadioGroup
+            android:id="@+id/But_Group"
+            android:layout_width="150dp"
+            android:layout_height="@dimen/stock_index_tab_height"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="90dp"
+            android:layout_marginLeft="10dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/MACD_But"
+                style="@style/StockIndexTabStyle"
+                android:layout_height="match_parent"
+                android:text="MACD" />
+
+            <RadioButton
+                android:id="@+id/RSI_But"
+                style="@style/StockIndexTabStyle"
+                android:layout_height="match_parent"
+                android:text="RSI" />
+
+            <RadioButton
+                android:id="@+id/KDJ_But"
+                style="@style/StockIndexTabStyle"
+                android:layout_height="match_parent"
+                android:text="KDJ" />
+
+            <RadioButton
+                android:id="@+id/BOLL_But"
+                style="@style/StockIndexTabStyle"
+                android:layout_height="match_parent"
+                android:clickable="false"
+                android:text="BOLL"
+                android:visibility="invisible" />
+
+        </RadioGroup>
+    </com.wordplat.ikvstockchart.InteractiveKLineLayout>
+
 
 </RelativeLayout>
