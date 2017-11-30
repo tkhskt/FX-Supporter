@@ -9,6 +9,6 @@ import retrofit2.http.Query
  */
 
 interface Client {
-    @GET("/v1/ticker")
-    fun search(@Query("product_code") query: String): Observable<List<Ticker>>
+    @GET("/markets/bitflyer/btcfxjpy/ohlc")
+    fun search(@Query("periods") query: Int): Observable<Candle>
 }
