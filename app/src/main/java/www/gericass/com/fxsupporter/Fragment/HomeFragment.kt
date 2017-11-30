@@ -32,8 +32,6 @@ import com.wordplat.ikvstockchart.compat.ViewUtils.getSizeColor
 import com.wordplat.ikvstockchart.entry.SizeColor
 
 
-
-
 class HomeFragment : Fragment() {
 
 
@@ -45,7 +43,6 @@ class HomeFragment : Fragment() {
     private var entrySet: EntrySet = EntrySet()
 
     private var mListener: HomeFragment.OnFragmentInteractionListener? = null
-
 
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -96,9 +93,9 @@ class HomeFragment : Fragment() {
                 .toSingle()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.v("api",it.result.get(300)?.get(0)?.get(1).toString())
+                    Log.v("api", it.result.get(300)?.get(0)?.get(1).toString())
 
-                    entrySet =  DataExtension(it.result.get(300)).getEntrySet()
+                    entrySet = DataExtension(it.result.get(300)).getEntrySet()
                     entrySet.computeStockIndex()
                     kLineLayout.getKLineView().setEntrySet(entrySet)
                     kLineLayout.getKLineView().notifyDataSetChanged()
@@ -117,7 +114,7 @@ class HomeFragment : Fragment() {
         sizeColor.setIncreasingColor(-0xb04796)
         sizeColor.setDecreasingColor(-0x1fa6a7)
 
-        kLineLayout.getKLineView().setKLineHandler(object : KLineHandler{
+        kLineLayout.getKLineView().setKLineHandler(object : KLineHandler {
 
 
             override fun onLeftRefresh() {
@@ -194,8 +191,6 @@ class HomeFragment : Fragment() {
             return fragment
         }
     }
-
-
 
 
 }
