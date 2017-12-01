@@ -22,7 +22,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import rx.schedulers.Schedulers
-import www.gericass.com.fxsupporter.API.Client
+import www.gericass.com.fxsupporter.API.CryptClient
 import www.gericass.com.fxsupporter.API.Candle
 import www.gericass.com.fxsupporter.API.DataExtension
 
@@ -35,7 +35,7 @@ import com.wordplat.ikvstockchart.entry.SizeColor
 class HomeFragment : Fragment() {
 
 
-    // TODO: Rename and change types of parameters
+    // TODO: Rename and chaRxnge types of parameters
     private var mParam1: String? = null
     private var mParam2: String? = null
 
@@ -54,7 +54,7 @@ class HomeFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        val DELAY: Long = 15000
+        val DELAY: Long = 1500
         val _handler = Handler()
 
         val gson = GsonBuilder()
@@ -66,7 +66,7 @@ class HomeFragment : Fragment() {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
 
-        val apiClient = retrofit.create(Client::class.java)
+        val apiClient = retrofit.create(CryptClient::class.java)
 
 
         _handler.postDelayed(object : Runnable {
@@ -83,12 +83,13 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun getTicker(apiClient: Client) {
+    private fun getTicker(apiClient: CryptClient) {
         /**
          * APIリクエスト
          */
 
-        apiClient.search(300)
+        val map = mapOf<String,String>("periods" to "300")
+        apiClient.search(map)
                 .subscribeOn(Schedulers.io())
                 .toSingle()
                 .observeOn(AndroidSchedulers.mainThread())
