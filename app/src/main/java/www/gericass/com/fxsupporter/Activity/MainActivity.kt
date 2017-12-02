@@ -32,7 +32,6 @@ import www.gericass.com.fxsupporter.R
 import android.graphics.Color.parseColor
 
 
-@TargetApi(21)
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
