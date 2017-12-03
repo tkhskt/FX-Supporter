@@ -88,7 +88,7 @@ class HomeFragment : Fragment() {
          * APIリクエスト
          */
 
-        val map = mapOf<String,String>("periods" to "300")
+        val map = mapOf<String,String>("periods" to "300,3600,86400")
         apiClient.search(map)
                 .subscribeOn(Schedulers.io())
                 .toSingle()
