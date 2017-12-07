@@ -30,6 +30,7 @@ import www.gericass.com.fxsupporter.API.DataExtension
 import www.gericass.com.fxsupporter.Fragment.HomeFragment
 import www.gericass.com.fxsupporter.R
 import android.graphics.Color.parseColor
+import www.gericass.com.fxsupporter.enum.Term
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener {
@@ -39,11 +40,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val manager = supportFragmentManager
-        val transaction = manager.beginTransaction()
-        transaction.add(R.id.container, HomeFragment())
-        transaction.commit()
 
+        setCandleStickFragment(Term.MIN.term) // 5分足のHomeFragmentをset
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -70,14 +68,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val apiClient = retrofit.create(CryptPriceClient::class.java)
 
-        var currentValue: Int?
 
         _handler.postDelayed(object : Runnable {
             /**
              * APIリクエストの定期実行
              */
             override fun run() {
-                currentValue = getApiRes(apiClient)
+                setApiRes(apiClient)
 
                 _handler.postDelayed(this, DELAY)
             }
@@ -85,7 +82,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    fun getApiRes(apiClient: CryptPriceClient): Int? {
+    fun setApiRes(apiClient: CryptPriceClient): Int? {
         var price: Int? = 0
         apiClient.search()
                 .subscribeOn(Schedulers.io())
@@ -120,7 +117,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         when (item.itemId) {
-            R.id.action_settings -> return true
+            R.id.term_minute -> {
+                setCandleStickFragment(Term.MIN.term)
+                return true
+            }
+            R.id.term_hour -> {
+                setCandleStickFragment(Term.HOUR.term)
+                return true
+            }
+
+            R.id.term_day -> {
+                setCandleStickFragment(Term.DAY.term)
+                return true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
     }
@@ -154,7 +163,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onFragmentInteraction(uri: Uri) {
 
+    }
 
+    fun setCandleStickFragment(term: Int) {
+        val manager = supportFragmentManager
+        val bundle = Bundle()
+        bundle.putInt("term", term)
+        val fragment = HomeFragment()
+        fragment.setArguments(bundle)
+        val transaction = manager.beginTransaction()
+        transaction.replace(R.id.container, fragment, HomeFragment().tag)
+        transaction.commit()
     }
 }
 

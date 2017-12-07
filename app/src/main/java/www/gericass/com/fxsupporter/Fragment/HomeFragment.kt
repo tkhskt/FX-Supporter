@@ -39,6 +39,7 @@ class HomeFragment : Fragment() {
     private var mParam1: String? = null
     private var mParam2: String? = null
 
+    private var term: Int? = null
 
     private var entrySet: EntrySet = EntrySet()
 
@@ -53,6 +54,9 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+
+        val bundle = arguments
+        term = bundle.getInt("term")
 
         val DELAY: Long = 1500
         val _handler = Handler()
@@ -94,9 +98,10 @@ class HomeFragment : Fragment() {
                 .toSingle()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.v("api", it.result.get(300)?.get(0)?.get(1).toString())
+                    Log.v("api", it.result.get(term)?.get(0)?.get(1).toString())
 
-                    entrySet = DataExtension(it.result.get(300)).getEntrySet()
+
+                    entrySet = DataExtension(it.result.get(term)).getEntrySet(term)
                     entrySet.computeStockIndex()
                     kLineLayout.getKLineView().setEntrySet(entrySet)
                     kLineLayout.getKLineView().notifyDataSetChanged()
