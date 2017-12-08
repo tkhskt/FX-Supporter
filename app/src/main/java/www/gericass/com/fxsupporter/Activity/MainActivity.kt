@@ -30,6 +30,7 @@ import www.gericass.com.fxsupporter.API.DataExtension
 import www.gericass.com.fxsupporter.Fragment.HomeFragment
 import www.gericass.com.fxsupporter.R
 import android.graphics.Color.parseColor
+import www.gericass.com.fxsupporter.Fragment.ProfitFragment
 import www.gericass.com.fxsupporter.enum.Term
 
 
@@ -135,26 +136,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.nav_camera -> {
-                // Handle the camera action
+            R.id.nav_home -> {
+                setCandleStickFragment(Term.MIN.term)
             }
-            R.id.nav_gallery -> {
+            R.id.nav_profit -> {
+                val manager = supportFragmentManager
+                val transaction = manager.beginTransaction()
+                transaction.replace(R.id.container,ProfitFragment())
+                transaction.commit()
+            }
 
-            }
-            R.id.nav_slideshow -> {
-
-            }
-            R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)

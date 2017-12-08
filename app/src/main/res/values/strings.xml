@@ -12,4 +12,17 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="btc_fx">BTC-FX/JPY</string>
+
+    <string-array name="buy_sell">
+        <item>売</item>
+        <item>買</item>
+    </string-array>
+
+    <string-array name="plus_minus">
+        <item>+</item>
+        <item>-</item>
+    </string-array>
+
+    <string name="price">約定価格</string>
+    <string name="risk">損益額</string>
 </resources>

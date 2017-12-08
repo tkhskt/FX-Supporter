@@ -35,10 +35,6 @@ import com.wordplat.ikvstockchart.entry.SizeColor
 class HomeFragment : Fragment() {
 
 
-    // TODO: Rename and chaRxnge types of parameters
-    private var mParam1: String? = null
-    private var mParam2: String? = null
-
     private var term: Int? = null
 
     private var entrySet: EntrySet = EntrySet()
